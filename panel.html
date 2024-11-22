@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CS Magic Network Monitor</title>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #1976D2;
+            --background-color: #f8f9fa;
+            --border-color: #e0e0e0;
+            --text-color: #333;
+            --hover-color: #e3f2fd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .brand-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            padding: 12px 20px;
+            background: white;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .request-list {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .request-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .request-item:hover {
+            background-color: var(--hover-color);
+        }
+
+        .request-item.selected {
+            background-color: var(--hover-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .request-details {
+            padding: 20px;
+            background: white;
+            height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .method {
+            font-weight: 600;
+            min-width: 70px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            background: #e3f2fd;
+            color: var(--primary-color);
+        }
+
+        .url {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .status-completed { color: #4caf50; }
+        .status-error { color: #f44336; }
+        .status-pending { color: #ff9800; }
+
+        .detail-section {
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .detail-section h3 {
+            margin: 0;
+            padding: 12px 16px;
+            background: #f5f5f5;
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        pre {
+            background: #fafafa;
+            padding: 12px 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background: var(--secondary-color);
+        }
+
+        button.secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        button.secondary:hover {
+            background: var(--hover-color);
+        }
+
+        .filter-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--border-color);
+        }
+
+        .windsurf-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="brand">
+            <div class="brand-logo">⚡️</div>
+            <div>
+                <div style="font-weight: 600;">CS Magic Network Monitor</div>
+                <div class="brand-text">Powered by CS Magic Society</div>
+            </div>
+        </div>
+        <div class="windsurf-badge">
+            <span>Built with</span>
+            <strong>Windsurf</strong>
+            <span>🏄‍♂️</span>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button id="clearBtn">
+            <span>🧹</span>
+            Clear All
+        </button>
+        <button id="exportBtn" class="secondary">
+            <span>📤</span>
+            Export
+        </button>
+        <input type="text" 
+               class="filter-input" 
+               id="filterInput" 
+               placeholder="Filter requests by URL or method...">
+        <button id="pauseBtn" class="secondary">
+            <span>⏸</span>
+            Pause
+        </button>
+    </div>
+
+    <div class="request-list" id="requestList">
+        <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No Requests Yet</h3>
+            <p>Start browsing to capture network requests</p>
+        </div>
+    </div>
+    
+    <div class="request-details" id="requestDetails"></div>
+
+    <script src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Network Request Monitor",
+  "version": "1.0",
+  "description": "Monitor and log network requests made during page interactions",
+  "permissions": [
+    "webRequest",
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "devtools_page": "devtools.html",
+  "background": {
+    "service_worker": "background.js"
+  }
+}
